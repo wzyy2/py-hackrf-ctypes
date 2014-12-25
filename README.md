@@ -24,12 +24,12 @@ hackrf = pylibhackrf.HackRf()
 
 if hackrf.is_open == False:
     hackrf.setup()
-    hackrf.set_freq(hackrf_settings.centre_frequency)
-    hackrf.set_sample_rate(hackrf_settings.sample_rate)
+    hackrf.set_freq(100 * 1000 * 1000)
+    hackrf.set_sample_rate(8 * 1000 * 1000)
     hackrf.set_amp_enable(False)
-    hackrf.set_lna_gain(hackrf_settings.if_gain)
-    hackrf.set_vga_gain(hackrf_settings.bb_gain)    
-    hackrf.set_baseband_filter_bandwidth(hackrf_settings.bb_bandwidth)  
+    hackrf.set_lna_gain(16)
+    hackrf.set_vga_gain(20)    
+    hackrf.set_baseband_filter_bandwidth(1 * 1000 * 1000)  
 
 def callback_fun(hackrf_transfer):
     array_type = (ctypes.c_ubyte*length)
