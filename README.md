@@ -10,6 +10,7 @@ So finally i choose ctypes .
 * libusb,NumPy
 * Python 2.7.x/3.3+
 * libhackrf
+
 install [libhackrf](https://github.com/mossmann/hackrf/tree/master/host)
 
         sudo apt-get install python-dev,libusb-1.0-0 
