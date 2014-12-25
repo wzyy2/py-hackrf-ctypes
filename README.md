@@ -12,9 +12,8 @@ So finally i choose ctypes .
 * libhackrf
 * NumPy
 
-    sudo apt-get install python-dev,libusb-1.0-0
-
-install [libhackrf](https://github.com/mossmann/hackrf/tree/master/host)
+        sudo apt-get install python-dev,libusb-1.0-0 
+        install [libhackrf](https://github.com/mossmann/hackrf/tree/master/host)
 
 ## Examples
 
