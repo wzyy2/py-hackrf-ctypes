@@ -7,13 +7,14 @@ So finally i choose ctypes .
 
 # Dependencies
 
-* libusb
+* libusb,NumPy
 * Python 2.7.x/3.3+
 * libhackrf
-* NumPy
+install [libhackrf](https://github.com/mossmann/hackrf/tree/master/host)
 
         sudo apt-get install python-dev,libusb-1.0-0 
-        install [libhackrf](https://github.com/mossmann/hackrf/tree/master/host)
+
+
 
 ## Examples
 
