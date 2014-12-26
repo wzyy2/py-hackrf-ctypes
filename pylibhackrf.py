@@ -329,7 +329,7 @@ class HackRf(object):
             logger.debug('Successfully start HackRf in Transfer Mode')
             return HackRfError.HACKRF_SUCCESS
         else:
-            logger.error('Failed to stop HackRf in Transfer Mode')
+            logger.error('Failed to start HackRf in Transfer Mode')
 
     def stop_tx_mode(self):
         ret = libhackrf.hackrf_stop_tx(self.device)
