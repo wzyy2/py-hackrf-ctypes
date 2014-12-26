@@ -1,7 +1,7 @@
 pyhackrf-ctypes
 ==============
 pyhackrf-ctypes is a Python wrapper for libhackrf.<br>
-I create this project because  i want a simple Python interface to my hackrf board.
+I create this project because  I want a simple Python interface to my hackrf board.
 At First I use pyusb to directly get the data from HackRF,  then I found pyusb can only move data at a  rate of  5MiB/S, too slow for HackRF.So I choose to use ctypes .
 
 # Dependencies
@@ -44,4 +44,4 @@ hackrf.start_rx_mode(callback_fun)
 There are a few remaining functions in libhackrf  haven't been wrapped.
 
 # License
-All of the code contained here is licensed by the GNU General Public License v3.
+Do What The Fuck You Want To Public License.
