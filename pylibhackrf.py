@@ -1,13 +1,8 @@
 from ctypes import *
 import logging
-import os,sys
+import os
+import numpy as np
 
-# see if NumPy is available
-has_numpy = True
-try:
-    import numpy as np
-except ImportError:
-    has_numpy = False
 try:
     from itertools import izip
 except ImportError:
@@ -259,15 +254,19 @@ libhackrf.hackrf_set_antenna_enable.argtypes = [POINTER(hackrf_device), c_uint8]
 # hackrf_compute_baseband_filter_bw_round_down_lt(const uint32_t
 # bandwidth_hz);
 libhackrf.hackrf_compute_baseband_filter_bw_round_down_lt.restype = c_uint32
-libhackrf.hackrf_compute_baseband_filter_bw_round_down_lt.argtypes = [
-    POINTER(hackrf_device), c_uint32]
+libhackrf.hackrf_compute_baseband_filter_bw_round_down_lt.argtypes = [c_uint32]
 
 # extern ADDAPI uint32_t ADDCALL
 # hackrf_compute_baseband_filter_bw(const uint32_t bandwidth_hz);
 libhackrf.hackrf_compute_baseband_filter_bw.restype = c_uint32
-libhackrf.hackrf_compute_baseband_filter_bw.argtypes = [POINTER(hackrf_device), c_uint32]
+libhackrf.hackrf_compute_baseband_filter_bw.argtypes = [c_uint32]
 
 class HackRf(object):
+    __JELLYBEAN__ = 'Jellybean'
+    __JAWBREAKER__ = 'Jawbreaker'
+    __ONE = 'HackRF ONE'
+    NAME_LIST = [__JELLYBEAN__, __JAWBREAKER__, __ONE]
+
     def __init__(self):
         self.device = POINTER(hackrf_device)()
         self.callback = None
@@ -287,7 +286,7 @@ class HackRf(object):
         return ret
 
     def open(self):
-        ret = libhackrf.hackrf_open(pointer(self.device))
+        ret = libhackrf.hackrf_open(self.device)
         if ret == HackRfError.HACKRF_SUCCESS:
             self.is_open = True
             logger.debug('Successfully open HackRf device')
@@ -374,6 +373,7 @@ class HackRf(object):
             return False
 
     def set_lna_gain(self, value):
+        ''' Sets the LNA gain, in 8Db steps, maximum value of 40 '''
         result = libhackrf.hackrf_set_lna_gain(self.device, value)
         if result == HackRfError.HACKRF_SUCCESS:
             logger.debug('Successfully set LNA gain to [%d]', value)
@@ -382,6 +382,7 @@ class HackRf(object):
             logger.error('Failed to set LNA gain to [%d]', value)
 
     def set_vga_gain(self, value):
+        ''' Sets the vga gain, in 2db steps, maximum value of 62 '''
         result = libhackrf.hackrf_set_vga_gain(self.device, value)
         if result == HackRfError.HACKRF_SUCCESS:
             logger.debug('Successfully set VGA gain to [%d]', value)
@@ -390,6 +391,7 @@ class HackRf(object):
             logger.error('Failed to set VGA gain to [%d]', value)
 
     def set_txvga_gain(self, value):
+        ''' Sets the txvga gain, in 1db steps, maximum value of 47 '''
         result = libhackrf.hackrf_set_txvga_gain(self.device, value)
         if result == HackRfError.HACKRF_SUCCESS:
             logger.debug('Successfully set TXVGA gain to [%d]', value)
@@ -487,11 +489,11 @@ class HackRf(object):
 
     def compute_baseband_filter_bw_round_down_lt(self, bandwidth_hz):
         pass
-        return libhackrf.hackrf_compute_baseband_filter_bw_round_down_lt(self.device, bandwidth_hz)
+        return libhackrf.hackrf_compute_baseband_filter_bw_round_down_lt(bandwidth_hz)
 
     def compute_baseband_filter_bw(self, bandwidth_hz):
         pass
-        return libhackrf.hackrf_compute_baseband_filter_bw(self.device, bandwidth_hz)
+        return libhackrf.hackrf_compute_baseband_filter_bw(bandwidth_hz)
 
     # def hackrf_set_freq_explicit(self, if_freq_hz, lo_freq_hz, path):
     #     pass
@@ -516,15 +518,23 @@ class HackRf(object):
     # out[0] = (out[0] - 127)*(1.0/128);
     def packed_bytes_to_iq(self, bytes):
         ''' Convenience function to unpack array of bytes to Python list/array
+        of complex numbers and normalize range.  size 16*32*512 262 144
+        '''
+        # use NumPy array
+        iq = np.empty(len(bytes)//2, 'complex')
+        iq.real, iq.imag = bytes[::2], bytes[1::2]
+        iq /= (255/2)
+        iq -= (1 + 1j)
+        return iq
+
+    def packed_bytes_to_iq_withsize(self, bytes, size):
+        ''' Convenience function to unpack array of bytes to Python list/array
         of complex numbers and normalize range.
         '''
-        if has_numpy:
-            # use NumPy array
-            iq = np.empty(len(bytes)//2, 'complex')
-            iq.real, iq.imag = bytes[::2], bytes[1::2]
-            iq /= (255/2)
-            iq -= (1 + 1j)
-        else:
-            # use normal list
-            iq = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in izip(bytes[::2], bytes[1::2])]
+        # use NumPy array
+        iq = np.empty(size , 'complex')
+        bytes2 = bytes[0:size * 2]
+        iq.real, iq.imag = bytes2[::2], bytes2[1::2]
+        iq /= (255/2)
+        iq -= (1 + 1j)
         return iq
