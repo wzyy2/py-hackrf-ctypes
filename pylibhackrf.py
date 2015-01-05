@@ -80,7 +80,7 @@ class hackrf_device(Structure):
 
 class hackrf_transfer(Structure):
         _fields_ = [("hackrf_device", POINTER(hackrf_device)),
-                ("buffer", POINTER(c_uint8)),
+                ("buffer", POINTER(c_byte)),
                 ("buffer_length", c_int),
                 ("valid_length", c_int),
                 ("rx_ctx", c_void_p),
@@ -523,8 +523,7 @@ class HackRf(object):
         # use NumPy array
         iq = np.empty(len(bytes)//2, 'complex')
         iq.real, iq.imag = bytes[::2], bytes[1::2]
-        iq /= (255/2)
-        iq -= (1 + 1j)
+        iq /= 128.0
         return iq
 
     def packed_bytes_to_iq_withsize(self, bytes, size):
@@ -535,6 +534,5 @@ class HackRf(object):
         iq = np.empty(size , 'complex')
         bytes2 = bytes[0:size * 2]
         iq.real, iq.imag = bytes2[::2], bytes2[1::2]
-        iq /= (255/2)
-        iq -= (1 + 1j)
+        iq /= 128.0
         return iq

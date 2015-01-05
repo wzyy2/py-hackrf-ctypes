@@ -31,7 +31,7 @@ if hackrf.is_open == False:
     hackrf.set_baseband_filter_bandwidth(1 * 1000 * 1000)  
 
 def callback_fun(hackrf_transfer):
-    array_type = (ctypes.c_ubyte*length)
+    array_type = (ctypes.c_byte*length)
     values = ctypes.cast(hackrf_transfer.contents.buffer, ctypes.POINTER(array_type)).contents
     #iq data here
     iq = hackrf.packed_bytes_to_iq(values)    
