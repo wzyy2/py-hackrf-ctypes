@@ -13,7 +13,7 @@ logging.basicConfig()
 logger = logging.getLogger('HackRf Core')
 logger.setLevel(logging.DEBUG)
 
-libhackrf = CDLL('/usr/local/lib/libhackrf.so')
+libhackrf = CDLL(os.environ.get('LIBHACKRF', '/usr/local/lib/libhackrf.so'))
 
 def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
